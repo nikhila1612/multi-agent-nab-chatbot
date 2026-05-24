@@ -1,0 +1,61 @@
+{
+  "sess_3g2nvu3sgks": [
+    {
+      "role": "user",
+      "content": "What credit cards does NAB offer?",
+      "ts": 1779639380.8721497
+    },
+    {
+      "role": "assistant",
+      "content": "NAB offers a range of personal credit cards designed to suit different spending habits and reward preferences. We have several options, including the NAB Rewards card and the NAB Qantas Points card, both offering valuable rewards programs. Interest rates and fees are subject to change, so it’s always best to check the current terms and conditions for the specific card you’re interested in. Would you like more detail on any of these?",
+      "ts": 1779639392.6061487
+    },
+    {
+      "role": "user",
+      "content": "How do I send money overseas?",
+      "ts": 1779639417.9609447
+    },
+    {
+      "role": "assistant",
+      "content": "You can send money overseas through NAB Internet Banking. To do this, you must first register for SMS Security and have Pay Anyone enabled in your NAB account. There is no limit on the number of international transfers you can make, as long as the total amount you’re transferring is under your daily limit. Before completing the transaction, you need to have enough money to cover both the fee and transaction amount. Would you like more detail on any of these?",
+      "ts": 1779639429.771063
+    },
+    {
+      "role": "user",
+      "content": "How do I reset my NAB password?",
+      "ts": 1779639444.139355
+    },
+    {
+      "role": "assistant",
+      "content": "As an administrator, you can reset a password for a General User in NAB Connect. To do this, you will need to follow these steps:\n\n1.  Click ‘Admin’ In the menu.\n2.  Click ‘Users & permissions’.\n3.  Select the checkbox for the user.\n4.  Click the ‘Reset Password’ button.\n5.  Click ‘Reset Password’ to confirm.\n\nWould you like more detail on any of these?\n\nIf you are a General User, you can reset your own password by following the steps in our video guide: [https://www.nab.com.au/support/videos/how-to-reset-your-nab-password](https://www.nab.com.au/support/videos/how-to-reset-your-nab-password)\n\nYou can also contact us on 13 59 77 for assistance.",
+      "ts": 1779639458.6407413
+    },
+    {
+      "role": "user",
+      "content": "What is NAB's SWIFT code?",
+      "ts": 1779639671.0465157
+    },
+    {
+      "role": "assistant",
+      "content": "NAB does not have a single SWIFT code for international transfers. Instead, your receiving bank will have a BIC (Bank Identifier Code) code that we use to route your funds. \n\nNAB uses a range of BIC codes depending on the country you are sending money to. To ensure your transfer is processed correctly, please select the country you wish to transfer funds to, followed by the currency. The currency will default to the preferred currency of that country. You can select another currency from the drop-down box, if required.",
+      "ts": 1779639683.1791494
+    },
+    {
+      "role": "user",
+      "content": "What business accounts does NAB offer?",
+      "ts": 1779639714.425268
+    },
+    {
+      "role": "assistant",
+      "content": "NAB offers a range of business bank accounts designed to suit different business needs. We provide transaction accounts, business savings and term deposit accounts, and specialised accounts for specific industries. \n\nYou can compare our business bank accounts using our simple side-by-side comparison tool to determine which account is right for your business, whether it’s a business bank accounts for a startup, or another type of business.",
+      "ts": 1779639725.5958092
+    }
+  ],
+  "sess_ijxz60d3b1": [
+    {
+      "role": "assistant",
+      "content": "NAB offers a range of credit cards designed for both personal and business needs. We have several personal credit cards, including the NAB Rewards card and the Qantas Points card, which offer fantastic rewards programs. For businesses, we provide NAB business credit cards with tailored benefits for business expenses. Would you like more detail on any of these?",
+      "ts": 1779639381.0657988
+    }
+  ]
+}

@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>NAB Virtual Banking Assistant</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  /* ─── Variables ────────────────────────────────────────── */
+  :root {
+    --nab-red:     #E8001D;
+    --nab-dark:    #1A0A0A;
+    --nab-charcoal:#2D2020;
+    --nab-surface: #FFF8F8;
+    --nab-card:    #FFFFFF;
+    --nab-border:  #F0E4E4;
+    --nab-muted:   #8A7070;
+    --nab-light-red: #FFF0F0;
+    --nab-accent:  #FF4D6A;
+    --font-display: 'DM Serif Display', Georgia, serif;
+    --font-body:    'DM Sans', system-ui, sans-serif;
+    --shadow-sm:   0 1px 4px rgba(232,0,29,0.08);
+    --shadow-md:   0 4px 24px rgba(232,0,29,0.12);
+    --shadow-lg:   0 12px 48px rgba(232,0,29,0.15);
+    --radius:      16px;
+    --radius-sm:   8px;
+  }
+
+  /* ─── Reset ─────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%;
+    font-family: var(--font-body);
+    background: var(--nab-surface);
+    color: var(--nab-charcoal);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ─── Layout ─────────────────────────────────────────────── */
+  .app {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    grid-template-rows: 100vh;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  /* ─── Sidebar ────────────────────────────────────────────── */
+  .sidebar {
+    background: var(--nab-dark);
+    display: flex;
+    flex-direction: column;
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .sidebar::before {
+    content: '';
+    position: absolute;
+    top: -80px;
+    right: -80px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(232,0,29,0.3) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .sidebar-logo {
+    padding: 28px 24px 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .logo-mark {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .logo-icon {
+    width: 40px;
+    height: 40px;
+    background: var(--nab-red);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    letter-spacing: -0.5px;
+    flex-shrink: 0;
+  }
+
+  .logo-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .logo-text .brand {
+    font-family: var(--font-display);
+    font-size: 17px;
+    color: #fff;
+    letter-spacing: 0.3px;
+    line-height: 1;
+  }
+
+  .logo-text .tagline {
+    font-size: 10px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 3px;
+  }
+
+  /* Agent Pills */
+  .sidebar-section {
+    padding: 20px 16px 8px;
+  }
+
+  .sidebar-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.3);
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+    padding: 0 8px;
+    margin-bottom: 8px;
+  }
+
+  .agent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .agent-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: var(--radius-sm);
+    cursor: default;
+    transition: background 0.15s;
+  }
+
+  .agent-item.active {
+    background: rgba(232,0,29,0.15);
+  }
+
+  .agent-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.15);
+    flex-shrink: 0;
+    transition: background 0.3s;
+  }
+
+  .agent-item.active .agent-dot {
+    background: var(--nab-red);
+    box-shadow: 0 0 8px rgba(232,0,29,0.7);
+  }
+
+  .agent-item.active.pulsing .agent-dot {
+    animation: agentPulse 1s ease-in-out infinite;
+  }
+
+  @keyframes agentPulse {
+    0%, 100% { box-shadow: 0 0 6px rgba(232,0,29,0.7); }
+    50%       { box-shadow: 0 0 16px rgba(232,0,29,1); }
+  }
+
+  .agent-name {
+    font-size: 12.5px;
+    color: rgba(255,255,255,0.55);
+    font-weight: 400;
+    transition: color 0.2s;
+  }
+
+  .agent-item.active .agent-name {
+    color: rgba(255,255,255,0.9);
+    font-weight: 500;
+  }
+
+  /* Sidebar bottom */
+  .sidebar-footer {
+    margin-top: auto;
+    padding: 16px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+  }
+
+  .new-chat-btn {
+    width: 100%;
+    padding: 10px 14px;
+    background: rgba(232,0,29,0.15);
+    border: 1px solid rgba(232,0,29,0.3);
+    border-radius: var(--radius-sm);
+    color: rgba(255,255,255,0.8);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .new-chat-btn:hover {
+    background: rgba(232,0,29,0.25);
+    color: #fff;
+  }
+
+  /* ─── Main Chat Area ──────────────────────────────────────── */
+  .main {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    background: var(--nab-surface);
+  }
+
+  /* Header */
+  .chat-header {
+    padding: 16px 32px;
+    background: var(--nab-card);
+    border-bottom: 1px solid var(--nab-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .header-left {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .chat-title {
+    font-family: var(--font-display);
+    font-size: 18px;
+    color: var(--nab-dark);
+    letter-spacing: -0.3px;
+  }
+
+  .chat-subtitle {
+    font-size: 11.5px;
+    color: var(--nab-muted);
+  }
+
+  .status-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    background: #F0FFF4;
+    border: 1px solid #B2F0C8;
+    border-radius: 20px;
+    font-size: 11.5px;
+    color: #1A7A40;
+    font-weight: 500;
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #22C55E;
+    animation: statusBlink 2s ease-in-out infinite;
+  }
+
+  @keyframes statusBlink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.4; }
+  }
+
+  /* Messages */
+  .messages-container {
+    flex: 1;
+    overflow-y: auto;
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    scroll-behavior: smooth;
+  }
+
+  .messages-container::-webkit-scrollbar { width: 4px; }
+  .messages-container::-webkit-scrollbar-track { background: transparent; }
+  .messages-container::-webkit-scrollbar-thumb {
+    background: var(--nab-border);
+    border-radius: 2px;
+  }
+
+  /* Welcome */
+  .welcome-card {
+    background: var(--nab-card);
+    border: 1px solid var(--nab-border);
+    border-radius: var(--radius);
+    padding: 32px;
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    animation: fadeUp 0.5s ease;
+  }
+
+  .welcome-avatar {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--nab-red), var(--nab-accent));
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 28px;
+    box-shadow: 0 8px 24px rgba(232,0,29,0.25);
+  }
+
+  .welcome-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    color: var(--nab-dark);
+    margin-bottom: 8px;
+  }
+
+  .welcome-desc {
+    font-size: 14px;
+    color: var(--nab-muted);
+    line-height: 1.6;
+    max-width: 420px;
+    margin: 0 auto 20px;
+  }
+
+  .quick-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+  }
+
+  .chip {
+    padding: 6px 14px;
+    background: var(--nab-light-red);
+    border: 1px solid rgba(232,0,29,0.15);
+    border-radius: 20px;
+    font-size: 12.5px;
+    color: var(--nab-red);
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.15s;
+    font-family: var(--font-body);
+  }
+
+  .chip:hover {
+    background: var(--nab-red);
+    color: #fff;
+    border-color: var(--nab-red);
+    transform: translateY(-1px);
+  }
+
+  /* Message Bubbles */
+  .message-row {
+    display: flex;
+    gap: 10px;
+    animation: fadeUp 0.3s ease;
+    max-width: 760px;
+  }
+
+  .message-row.user {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+    max-width: 600px;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .message-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .message-row:not(.user) .message-avatar {
+    background: linear-gradient(135deg, var(--nab-red), var(--nab-accent));
+    box-shadow: 0 4px 12px rgba(232,0,29,0.2);
+  }
+
+  .message-row.user .message-avatar {
+    background: var(--nab-border);
+  }
+
+  .message-body {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+  }
+
+  .message-meta {
+    font-size: 10.5px;
+    color: var(--nab-muted);
+    font-weight: 500;
+    letter-spacing: 0.3px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .message-row.user .message-meta {
+    justify-content: flex-end;
+  }
+
+  .agent-tag {
+    padding: 1px 7px;
+    background: var(--nab-light-red);
+    border: 1px solid rgba(232,0,29,0.15);
+    border-radius: 10px;
+    font-size: 9.5px;
+    color: var(--nab-red);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .bubble {
+    padding: 12px 16px;
+    border-radius: 14px;
+    font-size: 14px;
+    line-height: 1.65;
+    position: relative;
+  }
+
+  .message-row:not(.user) .bubble {
+    background: var(--nab-card);
+    border: 1px solid var(--nab-border);
+    border-top-left-radius: 4px;
+    color: var(--nab-charcoal);
+    box-shadow: var(--shadow-sm);
+  }
+
+  .message-row.user .bubble {
+    background: var(--nab-red);
+    color: #fff;
+    border-top-right-radius: 4px;
+  }
+
+  /* Bubble markdown-like styles */
+  .bubble strong { font-weight: 600; }
+  .bubble em { font-style: italic; }
+
+  .bubble ol, .bubble ul {
+    margin: 8px 0 4px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .bubble li { font-size: 13.5px; }
+
+  .bubble h3 {
+    font-family: var(--font-display);
+    font-size: 15px;
+    margin: 10px 0 4px;
+    color: var(--nab-dark);
+  }
+
+  /* Typing indicator */
+  .typing-row {
+    display: flex;
+    gap: 10px;
+    animation: fadeUp 0.3s ease;
+  }
+
+  .typing-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--nab-red), var(--nab-accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    box-shadow: 0 4px 12px rgba(232,0,29,0.2);
+    flex-shrink: 0;
+  }
+
+  .typing-bubble {
+    background: var(--nab-card);
+    border: 1px solid var(--nab-border);
+    border-radius: 14px;
+    border-top-left-radius: 4px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .typing-dot {
+    width: 7px;
+    height: 7px;
+    background: var(--nab-muted);
+    border-radius: 50%;
+    animation: typingBounce 1.2s ease-in-out infinite;
+  }
+
+  .typing-dot:nth-child(2) { animation-delay: 0.15s; }
+  .typing-dot:nth-child(3) { animation-delay: 0.30s; }
+
+  @keyframes typingBounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30%            { transform: translateY(-6px); opacity: 1; }
+  }
+
+  /* ─── Input Area ─────────────────────────────────────────── */
+  .input-area {
+    padding: 16px 32px 20px;
+    background: var(--nab-card);
+    border-top: 1px solid var(--nab-border);
+    flex-shrink: 0;
+  }
+
+  .input-wrap {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    background: var(--nab-surface);
+    border: 1.5px solid var(--nab-border);
+    border-radius: var(--radius);
+    padding: 8px 8px 8px 16px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  .input-wrap:focus-within {
+    border-color: var(--nab-red);
+    box-shadow: 0 0 0 3px rgba(232,0,29,0.08);
+  }
+
+  #messageInput {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-family: var(--font-body);
+    font-size: 14px;
+    color: var(--nab-charcoal);
+    resize: none;
+    outline: none;
+    line-height: 1.5;
+    max-height: 120px;
+    padding: 4px 0;
+  }
+
+  #messageInput::placeholder { color: #C0AAAA; }
+
+  .send-btn {
+    width: 38px;
+    height: 38px;
+    background: var(--nab-red);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+    box-shadow: 0 4px 12px rgba(232,0,29,0.3);
+  }
+
+  .send-btn:hover {
+    background: #C8001A;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(232,0,29,0.4);
+  }
+
+  .send-btn:active { transform: scale(0.95); }
+  .send-btn:disabled { background: var(--nab-border); box-shadow: none; cursor: not-allowed; }
+
+  .send-btn svg { width: 16px; height: 16px; fill: white; }
+
+  .input-hint {
+    font-size: 11px;
+    color: var(--nab-muted);
+    text-align: center;
+    margin-top: 8px;
+  }
+
+  /* ─── Responsive ─────────────────────────────────────────── */
+  @media (max-width: 768px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .messages-container { padding: 16px; }
+    .input-area { padding: 12px 16px 16px; }
+    .chat-header { padding: 12px 16px; }
+  }
+
+  /* ─── Scrollbar ──────────────────────────────────────────── */
+  .agent-list::-webkit-scrollbar { display: none; }
+
+  /* ─── Metrics Bar ───────────────────────────────────────── */
+  .metrics-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 6px;
+    flex-wrap: wrap;
+  }
+
+  .metric-pill {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 10.5px;
+    color: var(--nab-muted);
+    background: var(--nab-surface);
+    border: 1px solid var(--nab-border);
+    border-radius: 20px;
+    padding: 2px 9px;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+  }
+
+  .metric-pill.cached {
+    background: #F0FFF4;
+    border-color: #B2F0C8;
+    color: #1A7A40;
+  }
+
+  /* ─── Error toast ────────────────────────────────────────── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1A0A0A;
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 20px;
+    font-size: 13px;
+    z-index: 100;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+
+  .toast.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <div class="logo-icon">NAB</div>
+        <div class="logo-text">
+          <span class="brand">Virtual Assistant</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Active Agents</div>
+      <div class="agent-list" id="agentList">
+        <div class="agent-item" data-agent="orchestrator">
+          <div class="agent-dot"></div>
+          <span class="agent-name">🎯 Orchestrator</span>
+        </div>
+        <div class="agent-item" data-agent="accounts_agent">
+          <div class="agent-dot"></div>
+          <span class="agent-name">🏦 Accounts</span>
+        </div>
+        <div class="agent-item" data-agent="business_agent">
+          <div class="agent-dot"></div>
+          <span class="agent-name">💼 Business Banking</span>
+        </div>
+        <div class="agent-item" data-agent="cards_insurance_agent">
+          <div class="agent-dot"></div>
+          <span class="agent-name">💳 Cards & Insurance</span>
+        </div>
+        <div class="agent-item" data-agent="loans_agent">
+          <div class="agent-dot"></div>
+          <span class="agent-name">🏠 Loans</span>
+        </div>
+        <div class="agent-item" data-agent="payments_agent">
+          <div class="agent-dot"></div>
+          <span class="agent-name">💸 Payments</span>
+        </div>
+        <div class="agent-item" data-agent="support_agent">
+          <div class="agent-dot"></div>
+          <span class="agent-name">🛟 Support</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <button class="new-chat-btn" onclick="newChat()">
+        <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M12 5v14M5 12h14"/></svg>
+        New Conversation
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main class="main">
+    <header class="chat-header">
+      <div class="header-left">
+        <span class="chat-title">NAB Banking Assistant</span>
+      </div>
+    </header>
+
+    <div class="messages-container" id="messagesContainer">
+      <!-- Welcome card -->
+      <div class="welcome-card" id="welcomeCard">
+        <div class="welcome-avatar">🏦</div>
+        <h2 class="welcome-title">Hi! How can I help?</h2>
+        <p class="welcome-desc">
+          I'm NAB's banking assistant. Ask me anything about accounts, loans, payments, business banking, or cards.</br>
+          I'll connect you with the right specialist instantly.
+        </p>
+      </div>
+    </div>
+
+    <div class="input-area">
+      <div class="input-wrap">
+        <textarea
+          id="messageInput"
+          rows="1"
+          placeholder="Ask me anything about your NAB banking needs…"
+        ></textarea>
+        <button class="send-btn" id="sendBtn" onclick="sendMessage()" title="Send">
+          <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2L15 22l-4-9-9-4 20-7z"/></svg>
+        </button>
+      </div>
+      <p class="input-hint">NAB AI Assistant • Your conversations are private and secure</p>
+    </div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── State ───────────────────────────────────────────────────────────────────
+let sessionId = generateSessionId();
+let isLoading = false;
+
+const AGENT_LABELS = {
+  orchestrator:        '🎯 Orchestrator',
+  accounts_agent:      '🏦 Accounts',
+  business_agent:      '💼 Business',
+  cards_insurance_agent:'💳 Cards & Insurance',
+  loans_agent:         '🏠 Loans',
+  payments_agent:      '💸 Payments',
+  support_agent:       '🛟 Support',
+};
+
+function generateSessionId() {
+  return 'sess_' + Math.random().toString(36).substr(2, 12);
+}
+
+// ─── UI Helpers ──────────────────────────────────────────────────────────────
+
+function scrollToBottom() {
+  const c = document.getElementById('messagesContainer');
+  c.scrollTop = c.scrollHeight;
+}
+
+function setActiveAgent(agentName) {
+  document.querySelectorAll('.agent-item').forEach(el => {
+    el.classList.remove('active', 'pulsing');
+  });
+  const target = document.querySelector(`[data-agent="${agentName}"]`);
+  if (target) {
+    target.classList.add('active', 'pulsing');
+    setTimeout(() => target.classList.remove('pulsing'), 2500);
+  }
+}
+
+function showTyping() {
+  const row = document.createElement('div');
+  row.className = 'typing-row';
+  row.id = 'typingIndicator';
+  row.innerHTML = `
+    <div class="typing-avatar">🏦</div>
+    <div class="typing-bubble">
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+      <div class="typing-dot"></div>
+    </div>
+  `;
+  document.getElementById('messagesContainer').appendChild(row);
+  scrollToBottom();
+}
+
+function hideTyping() {
+  const t = document.getElementById('typingIndicator');
+  if (t) t.remove();
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ─── Message Rendering ────────────────────────────────────────────────────────
+
+function formatMarkdown(text) {
+  // Step 1: Bullet lists FIRST before anything touches the * characters
+  text = text.replace(/^\* (.+)$/gm, '<li>$1</li>');
+  text = text.replace(/^- (.+)$/gm, '<li>$1</li>');
+  text = text.replace(/^\d+\.\s+(.+)$/gm, '<li>$1</li>');
+
+  // Step 2: Bold and italic
+  text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
+
+  // Step 3: Headings
+  text = text.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+
+  // Step 4: Wrap list items
+  text = text.replace(/(<li>[\s\S]*?<\/li>)(\s*<li>[\s\S]*?<\/li>)*/g, m =>
+    `<ol style="padding-left:20px;margin:8px 0;">${m}</ol>`
+  );
+
+  // Step 5: Line breaks LAST
+  text = text.replace(/\n\n/g, '<br><br>');
+  text = text.replace(/\n/g, '<br>');
+
+  return text;
+}
+
+function appendMessage(role, content, agentName, metrics) {
+  // Hide welcome card
+  const wc = document.getElementById('welcomeCard');
+  if (wc) wc.style.display = 'none';
+
+  const container = document.getElementById('messagesContainer');
+  const row = document.createElement('div');
+  row.className = `message-row ${role === 'user' ? 'user' : ''}`;
+
+  const now = new Date().toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit' });
+
+  if (role === 'user') {
+    row.innerHTML = `
+      <div class="message-avatar">👤</div>
+      <div class="message-body">
+        <div class="message-meta" style="justify-content:flex-end">You &bull; ${now}</div>
+        <div class="bubble">${escapeHtml(content)}</div>
+      </div>
+    `;
+  } else {
+    const label = AGENT_LABELS[agentName] || '🏦 Assistant';
+    const agentTag = agentName && agentName !== 'orchestrator'
+      ? `<span class="agent-tag">${label.replace(/^.{2}/, '').trim()}</span>`
+      : '';
+
+    row.innerHTML = `
+      <div class="message-avatar">🏦</div>
+      <div class="message-body">
+        <div class="message-meta">NAB Assistant ${agentTag} &bull; ${now}</div>
+        <div class="bubble">${formatMarkdown(content)}</div>
+      </div>
+    `;
+  }
+
+  container.appendChild(row);
+  scrollToBottom();
+}
+
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/\n/g, '<br>');
+}
+
+// ─── Send Message ─────────────────────────────────────────────────────────────
+
+async function sendMessage(overrideText) {
+  const input = document.getElementById('messageInput');
+  const text = overrideText || input.value.trim();
+
+  if (!text || isLoading) return;
+
+  isLoading = true;
+  input.value = '';
+  autoResize(input);
+  document.getElementById('sendBtn').disabled = true;
+
+  appendMessage('user', text);
+  setActiveAgent('orchestrator');
+  showTyping();
+
+  try {
+    const res = await fetch('/api/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ session_id: sessionId, message: text }),
+    });
+
+    const data = await res.json();
+    hideTyping();
+
+    if (data.error) {
+      appendMessage('assistant', '⚠️ Sorry, something went wrong. Please try again.', 'support_agent', null);
+      showToast('Error: ' + data.error);
+    } else {
+      const agent = data.agent || 'orchestrator';
+      setActiveAgent(agent);
+      appendMessage('assistant', data.response, agent, data.metrics || null);
+    }
+  } catch (err) {
+    hideTyping();
+    appendMessage('assistant', '⚠️ Connection error. Please check your connection and try again.', 'support_agent', null);
+    showToast('Connection failed');
+  }
+
+  isLoading = false;
+  document.getElementById('sendBtn').disabled = false;
+  input.focus();
+}
+
+function quickAsk(text) {
+  sendMessage(text);
+}
+
+// ─── New Chat ─────────────────────────────────────────────────────────────────
+
+async function newChat() {
+  // Clear session on server
+  try {
+    await fetch(`/api/session/${sessionId}`, { method: 'DELETE' });
+  } catch (e) {}
+
+  sessionId = generateSessionId();
+
+  // Reset UI
+  const container = document.getElementById('messagesContainer');
+  container.innerHTML = `
+    <div class="welcome-card" id="welcomeCard">
+      <div class="welcome-avatar">🏦</div>
+      <h2 class="welcome-title">Hi! How can I help?</h2>
+      <p class="welcome-desc">
+        I'm NAB's banking assistant. Ask me anything about accounts, loans, payments, business banking, or cards</br>
+        I'll connect you with the right specialist instantly.
+      </p>
+  
+    </div>
+  `;
+
+  // Reset agents
+  document.querySelectorAll('.agent-item').forEach(el => el.classList.remove('active', 'pulsing'));
+}
+
+// ─── Auto-resize textarea ─────────────────────────────────────────────────────
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+document.getElementById('messageInput').addEventListener('input', function() {
+  autoResize(this);
+});
+
+document.getElementById('messageInput').addEventListener('keydown', function(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
+});
+
+// ── Delete session when user closes or refreshes the tab ─────────────────────
+// sendBeacon is used instead of fetch because fetch gets cancelled on tab close
+// sendBeacon queues the request and guarantees it completes even as page unloads
+window.addEventListener('beforeunload', function() {
+  navigator.sendBeacon(`/api/session/${sessionId}/delete`);
+});
+</script>
+</body>
+</html>
