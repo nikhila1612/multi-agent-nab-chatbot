@@ -6,6 +6,7 @@ A locally-hosted, multi-agent AI chatbot built for NAB (National Australia Bank)
 
 ## Demo
 
+[Watch the demo on Loom](https://www.loom.com/share/cde79cd929b94b61b66eac299c8888fe)
 ![NAB Chatbot UI 1](images/photo1.png)
 ![NAB Chatbot UI 2](images/photo2.png)
 
