@@ -398,6 +398,7 @@ def get_llm(temperature: float = 0.3, num_predict: int = 800) -> ChatOllama:
         base_url=OLLAMA_BASE_URL,
         temperature=temperature,
         num_predict=num_predict,
+        num_ctx=4096,
     )
 
 # ─── Base Specialist Agent ─────────────────────────────────────────────────────
@@ -680,7 +681,7 @@ You are **NAB Home Loans & Lending Specialist**, a knowledgeable guide for NAB l
 - NEVER use markdown tables (| col | col |), always use numbered lists instead
 
 ## Rules
-1. Always add: "Rates are indicative and subject to change. Contact NAB for your specific situation."
+1. Always add: "Rates are indicative , subject to change, and contact NAB for your specific situation."
 2. Never guarantee loan approval or make specific lending decisions.
 3. Present rate tables clearly.
 4. For complex scenarios offer to arrange a NAB home loan expert call.
