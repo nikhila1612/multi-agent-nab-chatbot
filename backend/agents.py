@@ -87,7 +87,7 @@ HOW A MESSAGE IS PROCESSED — FULL STEP-BY-STEP FLOW
   from its knowledge base — a JSON file full of real NAB banking information.
  
   Two retrieval strategies are used depending on knowledge base size:
-    - Large KB (> 8,000 chars) → FAISS semantic search: finds the top 6 most
+    - Large KB (> 8,000 chars) → FAISS semantic search: finds the top 3 most
       relevant text chunks for the user's specific question. Fast and focused.
     - Small KB (≤ 8,000 chars) → Full injection: the entire KB is included in
       the prompt. Simple and sufficient for small files.
@@ -168,7 +168,7 @@ OLLAMA_EMBED_MODEL = os.environ.get("OLLAMA_EMBED_MODEL", "nomic-embed-text")
 # Knowledge base files larger than this (in characters) get a FAISS index
 # for semantic search. Smaller files are injected whole into the prompt.
 FAISS_THRESHOLD_CHARS = 8_000   
-FAISS_TOP_K           = 6     # how many chunks to retrieve per query
+FAISS_TOP_K           = 3    # how many chunks to retrieve per query
 CHUNK_SIZE            = 600     # chars per chunk
 CHUNK_OVERLAP         = 80      # overlap between chunks
 
@@ -203,13 +203,13 @@ def session_append(session_id: str, role: str, content: str):
     role    — "user" for the customer's message, "assistant" for the AI's reply
     content — the actual message text
  
-    We keep only the last 30 messages per session to avoid the file growing
+    We keep only the last 10 messages per session to avoid the file growing
     indefinitely and to stay within the model's context window.
     """
     store = _load_json(SESSIONS_FILE)
     store.setdefault(session_id, [])
     store[session_id].append({"role": role, "content": content, "ts": time.time()})
-    store[session_id] = store[session_id][-30:]
+    store[session_id] = store[session_id][-10:]
     _save_json(SESSIONS_FILE, store)
 
 def session_clear(session_id: str):
@@ -392,13 +392,12 @@ for _cat in FILE_MAP:
 log.info("All knowledge bases ready.")
 
 # ─── LLM ──────────────────────────────────────────────────────────────
-def get_llm(temperature: float = 0.3, num_predict: int = 800) -> ChatOllama:
+def get_llm(temperature: float = 0.3, num_predict: int = 400) -> ChatOllama:
     return ChatOllama(
         model=OLLAMA_MODEL,
         base_url=OLLAMA_BASE_URL,
         temperature=temperature,
         num_predict=num_predict,
-        num_ctx=4096,
     )
 
 # ─── Base Specialist Agent ─────────────────────────────────────────────────────
